@@ -1,0 +1,82 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: auftragsuhr-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-auftragsuhr123}
+      MYSQL_DATABASE: ${DB_NAME:-auftragsuhr}
+      MYSQL_USER: ${DB_USER:-auftragsuhr_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-auftragsuhr123}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d
+      - ./backups:/backups
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - auftragsuhr-network
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: auftragsuhr-server
+    restart: always
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=${DB_NAME:-auftragsuhr}
+      - DB_USER=${DB_USER:-auftragsuhr_user}
+      - DB_PASSWORD=${DB_PASSWORD:-auftragsuhr123}
+      - JWT_SECRET=${JWT_SECRET:-your_jwt_secret_key_here}
+      - PORT=3001
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mysql
+    volumes:
+      - ./backups:/app/backups
+      - ./logs:/app/logs
+    networks:
+      - auftragsuhr-network
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: auftragsuhr-client
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+    networks:
+      - auftragsuhr-network
+
+  backup:
+    image: mysql:8.0
+    container_name: auftragsuhr-backup
+    restart: "no"
+    environment:
+      MYSQL_PWD: ${DB_PASSWORD:-auftragsuhr123}
+    volumes:
+      - ./backups:/backups
+      - ./scripts:/scripts
+    command: /scripts/backup.sh
+    depends_on:
+      - mysql
+    networks:
+      - auftragsuhr-network
+    profiles:
+      - backup
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  auftragsuhr-network:
+    driver: bridge

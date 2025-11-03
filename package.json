@@ -1,0 +1,34 @@
+{
+  "name": "auftragsuhr",
+  "version": "1.0.0",
+  "description": "Digitale Zeiterfassung für KFZ/Motorrad-Werkstätten",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "cd server && npm run dev",
+    "client:dev": "cd client && npm start",
+    "build": "cd client && npm run build",
+    "start": "cd server && npm start",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "backup:create": "docker exec auftragsuhr-mysql mysqldump -u root -p auftragsuhr > backups/backup_$(date +%Y%m%d_%H%M%S).sql",
+    "backup:restore": "docker exec -i auftragsuhr-mysql mysql -u root -p auftragsuhr",
+    "test": "cd server && npm test"
+  },
+  "keywords": [
+    "zeiterfassung",
+    "werkstatt",
+    "kfz",
+    "motorrad",
+    "anwesenheit"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2"
+  }
+}
