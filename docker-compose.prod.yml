@@ -1,0 +1,58 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: auftragsuhr-mysql-prod
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "127.0.0.1:3306:3306"  # Nur lokal erreichbar
+    volumes:
+      - mysql_data_prod:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d
+      - ./backups:/backups
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - auftragsuhr-network
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: auftragsuhr-server-prod
+    restart: always
+    env_file:
+      - .env.production
+    ports:
+      - "127.0.0.1:3001:3001"  # Nur lokal erreichbar
+    depends_on:
+      - mysql
+    volumes:
+      - ./backups:/app/backups
+      - ./logs:/app/logs
+    networks:
+      - auftragsuhr-network
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: auftragsuhr-client-prod
+    restart: always
+    ports:
+      - "127.0.0.1:8080:80"  # Nur lokal erreichbar
+    depends_on:
+      - server
+    networks:
+      - auftragsuhr-network
+
+volumes:
+  mysql_data_prod:
+    driver: local
+
+networks:
+  auftragsuhr-network:
+    driver: bridge
