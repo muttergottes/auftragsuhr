@@ -29,11 +29,18 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Nur bei /auth/validate redirect, nicht bei Login-Versuchen oder Kiosk-APIs
+      // Nur bei geschützten Seiten redirect, nicht bei öffentlichen Seiten oder Login-Versuchen
+      const currentPath = window.location.pathname;
+      const isPublicPage = currentPath === '/anwesenheit' || 
+                          currentPath === '/auftraege' || 
+                          currentPath === '/kiosk' || 
+                          currentPath === '/login';
+      
       if (!error.config.url.includes('/auth/login') && 
           !error.config.url.includes('/auth/kiosk') && 
           !error.config.url.includes('/auth/scan') &&
-          !error.config.url.includes('/attendance/kiosk')) {
+          !error.config.url.includes('/attendance/kiosk') &&
+          !isPublicPage) {
         localStorage.removeItem('token');
         window.location.href = '/login';
       }
