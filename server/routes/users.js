@@ -68,9 +68,9 @@ router.post('/', authenticateToken, requireAdmin, async (req, res) => {
     } = req.body;
 
     // Validate required fields
-    if (!employee_number || !email || !password || !first_name || !last_name) {
+    if (!employee_number || !password || !first_name || !last_name) {
       return res.status(400).json({ 
-        error: 'Missing required fields: employee_number, email, password, first_name, last_name' 
+        error: 'Missing required fields: employee_number, password, first_name, last_name' 
       });
     }
 
@@ -79,10 +79,12 @@ router.post('/', authenticateToken, requireAdmin, async (req, res) => {
     console.log('Email:', email);
     console.log('Employee Number:', employee_number);
     
-    const existingUser = await User.findByEmail(email);
-    if (existingUser) {
-      console.log('CONFLICT: Email already exists:', existingUser.id);
-      return res.status(409).json({ error: 'User with this email already exists' });
+    if (email) {
+      const existingUser = await User.findByEmail(email);
+      if (existingUser) {
+        console.log('CONFLICT: Email already exists:', existingUser.id);
+        return res.status(409).json({ error: 'User with this email already exists' });
+      }
     }
 
     const existingEmployee = await User.findByEmployeeNumber(employee_number);
