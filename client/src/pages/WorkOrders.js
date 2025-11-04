@@ -1209,7 +1209,6 @@ const CreateOrderModal = ({ onClose, onSuccess }) => {
                 className="form-input"
                 rows={3}
                 placeholder="Beschreibung der Arbeiten..."
-                required
               />
             </div>
 
@@ -1454,7 +1453,6 @@ const EditOrderModal = ({ order, onClose, onSuccess }) => {
                 className="form-input"
                 rows={3}
                 placeholder="Beschreibung der Arbeiten..."
-                required
               />
             </div>
 
