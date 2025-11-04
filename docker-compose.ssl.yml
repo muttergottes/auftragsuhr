@@ -5,6 +5,8 @@ services:
     image: nginx:alpine
     container_name: auftragsuhr-nginx-ssl
     restart: always
+    env_file:
+      - .env.production
     ports:
       - "80:80"
       - "443:443"
@@ -20,6 +22,8 @@ services:
     image: mysql:8.0
     container_name: auftragsuhr-mysql-prod
     restart: always
+    env_file:
+      - .env.production
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
@@ -49,6 +53,8 @@ services:
     build: ./client
     container_name: auftragsuhr-client-prod
     restart: always
+    env_file:
+      - .env.production
     ports:
       - "127.0.0.1:8080:80"
     depends_on:
