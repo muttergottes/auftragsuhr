@@ -23,7 +23,7 @@ INSERT INTO `categories` (`name`, `type`, `color`, `is_active`, `is_productive`,
 
 -- Default admin user (Password: admin123)
 INSERT INTO `users` (`employee_number`, `email`, `password_hash`, `first_name`, `last_name`, `role`, `pin`, `is_active`, `created_at`) VALUES
-('ADM001', 'admin@werkstatt.local', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LeX8UuK8f/6ZuYGKy', 'System', 'Administrator', 'admin', '1234', 1, NOW());
+('ADM001', 'admin@werkstatt.local', '$2b$12$5WnlbtGb3KUv519YG4V5Q.5qnokrIKwUvvkZxQO3bc9heplKDO9Ka', 'System', 'Administrator', 'admin', '1234', 1, NOW());
 
 -- Default system settings
 INSERT INTO `system_settings` (`setting_key`, `setting_value`, `data_type`, `description`, `is_public`) VALUES

@@ -5,7 +5,7 @@ class WorkOrderCategory {
     try {
       let query = `
         SELECT id, name, description, color, is_active, created_at, updated_at
-        FROM work_order_categories 
+        FROM categories 
         WHERE 1=1
       `;
       const params = [];
@@ -28,7 +28,7 @@ class WorkOrderCategory {
   static async findById(id) {
     try {
       const rows = await db.query(
-        'SELECT * FROM work_order_categories WHERE id = ?',
+        'SELECT * FROM categories WHERE id = ?',
         [id]
       );
       return rows[0] || null;
@@ -48,7 +48,7 @@ class WorkOrderCategory {
       } = categoryData;
 
       const result = await db.query(
-        `INSERT INTO work_order_categories 
+        `INSERT INTO categories 
          (name, description, color, is_active) 
          VALUES (?, ?, ?, ?)`,
         [name, description, color, is_active]
@@ -71,7 +71,7 @@ class WorkOrderCategory {
       } = categoryData;
 
       const result = await db.query(
-        `UPDATE work_order_categories 
+        `UPDATE categories 
          SET name = ?, description = ?, color = ?, is_active = ?,
              updated_at = NOW()
          WHERE id = ?`,
@@ -98,7 +98,7 @@ class WorkOrderCategory {
       }
 
       const result = await db.query(
-        'DELETE FROM work_order_categories WHERE id = ?',
+        'DELETE FROM categories WHERE id = ?',
         [id]
       );
 
@@ -113,7 +113,7 @@ class WorkOrderCategory {
     try {
       const rows = await db.query(
         `SELECT id, name, description, color 
-         FROM work_order_categories 
+         FROM categories 
          WHERE is_active = 1 
          ORDER BY name ASC`
       );

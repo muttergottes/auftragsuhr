@@ -1,0 +1,67 @@
+#!/usr/bin/expect -f
+set timeout 180
+set password "dnz7krfu4ira7cfga1q01q5u3iy5p9"
+set host "185.245.96.47"
+set user "root"
+
+spawn ssh -o StrictHostKeyChecking=no $user@$host
+expect "password:"
+send "$password\r"
+expect "# "
+
+# Clone repository
+send "cd /opt && rm -rf auftragsuhr\r"
+expect "# "
+send "git clone https://github.com/muttergottes/auftragsuhr.git\r"
+expect "# "
+send "cd auftragsuhr\r"
+expect "# "
+
+# Create production environment
+send "cat > .env.production << 'EOL'\nNODE_ENV=production\nDB_HOST=mysql\nDB_PORT=3306\nDB_NAME=auftragsuhr\nDB_USER=auftragsuhr_user\nDB_PASSWORD=StrongProdPassword2023!\nJWT_SECRET=sehr_sicherer_jwt_secret_key_mindestens_32_zeichen_lang_production\nEOL\r"
+expect "# "
+
+# Setup directories
+send "mkdir -p logs backups\r"
+expect "# "
+
+# Configure nginx
+send "cp nginx/auftragsuhr.conf /etc/nginx/sites-available/auftragsuhr\r"
+expect "# "
+send "ln -sf /etc/nginx/sites-available/auftragsuhr /etc/nginx/sites-enabled/\r"
+expect "# "
+send "rm -f /etc/nginx/sites-enabled/default\r"
+expect "# "
+send "nginx -t\r"
+expect "# "
+send "systemctl reload nginx\r"
+expect "# "
+
+# Start Docker containers
+send "docker-compose -f docker-compose.prod.yml down 2>/dev/null || true\r"
+expect "# "
+send "docker-compose -f docker-compose.prod.yml up -d --build\r"
+expect "# "
+
+# Wait and check status
+send "echo 'Waiting for containers to start...'\r"
+expect "# "
+send "sleep 20\r"
+expect "# "
+send "docker-compose -f docker-compose.prod.yml ps\r"
+expect "# "
+
+# Health checks
+send "echo 'Performing health checks...'\r"
+expect "# "
+send "curl -s http://localhost:3001/api/health || echo 'API not ready yet'\r"
+expect "# "
+send "curl -s http://localhost:8080 | head -5 || echo 'Frontend not ready yet'\r"
+expect "# "
+
+send "echo '=== DEPLOYMENT COMPLETED ==='\r"
+expect "# "
+send "echo 'Application should be available at: http://auftragsuhr.vendorserver.de'\r"
+expect "# "
+
+send "exit\r"

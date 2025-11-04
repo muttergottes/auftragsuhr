@@ -56,7 +56,7 @@ class WorkOrder {
       LEFT JOIN customers c ON wo.customer_id = c.id
       LEFT JOIN vehicles v ON wo.vehicle_id = v.id
       LEFT JOIN users u ON wo.assigned_to = u.id
-      LEFT JOIN work_order_categories woc ON wo.category_id = woc.id
+      LEFT JOIN categories woc ON wo.category_id = woc.id
       WHERE wo.id = ?
     `;
     
@@ -75,7 +75,7 @@ class WorkOrder {
       LEFT JOIN customers c ON wo.customer_id = c.id
       LEFT JOIN vehicles v ON wo.vehicle_id = v.id
       LEFT JOIN users u ON wo.assigned_to = u.id
-      LEFT JOIN work_order_categories woc ON wo.category_id = woc.id
+      LEFT JOIN categories woc ON wo.category_id = woc.id
       WHERE wo.order_number = ?
     `;
     
@@ -94,7 +94,7 @@ class WorkOrder {
       LEFT JOIN customers c ON wo.customer_id = c.id
       LEFT JOIN vehicles v ON wo.vehicle_id = v.id
       LEFT JOIN users u ON wo.assigned_to = u.id
-      LEFT JOIN work_order_categories woc ON wo.category_id = woc.id
+      LEFT JOIN categories woc ON wo.category_id = woc.id
       WHERE wo.status IN ('created', 'in_progress')
       ORDER BY wo.priority DESC, wo.created_at ASC
     `;

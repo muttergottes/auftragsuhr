@@ -1,0 +1,28 @@
+#!/usr/bin/expect -f
+set timeout 60
+set password "dnz7krfu4ira7cfga1q01q5u3iy5p9"
+set host "185.245.96.47"
+set user "root"
+
+spawn scp build.tar.gz $user@$host:/opt/auftragsuhr/client/
+expect "password:"
+send "$password\r"
+expect eof
+
+spawn ssh -o StrictHostKeyChecking=no $user@$host
+expect "password:"
+send "$password\r"
+expect "# "
+
+send "cd /opt/auftragsuhr/client\r"
+expect "# "
+send "tar -xzf build.tar.gz\r"
+expect "# "
+send "ls -la build/\r"
+expect "# "
+send "systemctl reload nginx\r"
+expect "# "
+send "echo 'Build uploaded and nginx reloaded!'\r"
+expect "# "
+
+send "exit\r"

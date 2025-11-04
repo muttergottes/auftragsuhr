@@ -1,0 +1,22 @@
+#!/usr/bin/expect -f
+set timeout 30
+set password "dnz7krfu4ira7cfga1q01q5u3iy5p9"
+set host "185.245.96.47"
+set user "root"
+
+spawn ssh -o StrictHostKeyChecking=no $user@$host
+expect {
+    "password:" {
+        send "$password\r"
+        expect "# "
+        send "echo 'SSH connection successful'\r"
+        expect "# "
+        send "uname -a\r"
+        expect "# "
+        send "exit\r"
+    }
+    timeout {
+        puts "Connection timed out"
+        exit 1
+    }
+}

@@ -1,0 +1,44 @@
+#!/usr/bin/expect -f
+set timeout 120
+set password "dnz7krfu4ira7cfga1q01q5u3iy5p9"
+set host "185.245.96.47"
+set user "root"
+
+spawn ssh -o StrictHostKeyChecking=no $user@$host
+expect "password:"
+send "$password\r"
+expect "# "
+
+send "cd /opt/auftragsuhr\r"
+expect "# "
+
+# Export environment variables properly
+send "export DB_PASSWORD=StrongProdPassword2023!\r"
+expect "# "
+send "export DB_USER=auftragsuhr_user\r"
+expect "# "
+send "export DB_NAME=auftragsuhr\r"
+expect "# "
+
+# Start containers with env variables
+send "docker-compose -f docker-compose.prod.yml down\r"
+expect "# "
+send "docker-compose -f docker-compose.prod.yml up -d\r"
+expect "# "
+
+send "echo 'Waiting for containers to start...'\r"
+expect "# "
+send "sleep 30\r"
+expect "# "
+
+send "docker-compose -f docker-compose.prod.yml ps\r"
+expect "# "
+
+send "echo 'Testing endpoints...'\r"
+expect "# "
+send "curl -s http://localhost:3001/api/health || echo 'API not ready yet'\r"
+expect "# "
+send "curl -s http://localhost:8080 | head -1 || echo 'Frontend not ready yet'\r"
+expect "# "
+
+send "exit\r"

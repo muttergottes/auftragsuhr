@@ -1,0 +1,27 @@
+#!/usr/bin/expect -f
+set timeout 30
+set password "dnz7krfu4ira7cfga1q01q5u3iy5p9"
+set host "185.245.96.47"
+set user "root"
+
+spawn ssh -o StrictHostKeyChecking=no $user@$host
+expect "password:"
+send "$password\r"
+expect "# "
+
+send "cd /opt/auftragsuhr\r"
+expect "# "
+
+send "docker ps\r"
+expect "# "
+
+send "docker-compose -f docker-compose.prod.yml ps\r"
+expect "# "
+
+send "docker-compose -f docker-compose.prod.yml logs --tail=10\r"
+expect "# "
+
+send "netstat -tlnp | grep -E '(3001|8080)'\r"
+expect "# "
+
+send "exit\r"

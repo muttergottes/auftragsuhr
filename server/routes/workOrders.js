@@ -152,7 +152,7 @@ router.get('/', authenticateToken, requireAnyRole, async (req, res) => {
         u.role as assigned_to_role,
         COALESCE(SUM(ws.duration_minutes), 0) as total_worked_minutes
       FROM work_orders wo
-      LEFT JOIN work_order_categories woc ON wo.category_id = woc.id
+      LEFT JOIN categories woc ON wo.category_id = woc.id
       LEFT JOIN users u ON wo.assigned_to = u.id
       LEFT JOIN work_sessions ws ON wo.id = ws.work_order_id AND ws.end_time IS NOT NULL
       WHERE 1=1
@@ -232,7 +232,7 @@ router.get('/active', authenticateToken, requireAnyRole, async (req, res) => {
         wo.estimated_hours, wo.customer_name, wo.created_at,
         woc.name as category_name, woc.color as category_color
       FROM work_orders wo
-      LEFT JOIN work_order_categories woc ON wo.category_id = woc.id
+      LEFT JOIN categories woc ON wo.category_id = woc.id
       WHERE wo.status IN ('created', 'in_progress')
       ORDER BY wo.priority DESC, wo.created_at DESC
     `);

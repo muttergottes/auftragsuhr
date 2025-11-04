@@ -1,0 +1,34 @@
+#!/usr/bin/expect -f
+set timeout 60
+set password "dnz7krfu4ira7cfga1q01q5u3iy5p9"
+set host "185.245.96.47"
+set user "root"
+
+spawn ssh -o StrictHostKeyChecking=no $user@$host
+expect "password:"
+send "$password\r"
+expect "# "
+
+send "cd /opt/auftragsuhr\r"
+expect "# "
+
+# Fix nginx config
+send "sed -i 's/proxy_Set_header/proxy_set_header/g' nginx/auftragsuhr.conf\r"
+expect "# "
+send "cp nginx/auftragsuhr.conf /etc/nginx/sites-available/auftragsuhr\r"
+expect "# "
+send "nginx -t && systemctl reload nginx\r"
+expect "# "
+
+# Restart docker with proper env
+send "docker-compose -f docker-compose.prod.yml down\r"
+expect "# "
+send "docker-compose -f docker-compose.prod.yml up -d\r"
+expect "# "
+
+send "sleep 20\r"
+expect "# "
+send "docker-compose -f docker-compose.prod.yml ps\r"
+expect "# "
+
+send "exit\r"

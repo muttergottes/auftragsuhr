@@ -1,0 +1,53 @@
+#!/usr/bin/expect -f
+set timeout 300
+set password "dnz7krfu4ira7cfga1q01q5u3iy5p9"
+set host "185.245.96.47"
+set user "root"
+
+spawn ssh -o StrictHostKeyChecking=no $user@$host
+expect "password:"
+send "$password\r"
+expect "# "
+
+# Install curl
+send "apt install -y curl\r"
+expect "# "
+
+send "cd /opt/auftragsuhr\r"
+expect "# "
+
+# Create environment file
+send "cat > .env.production << 'EOL'\nNODE_ENV=production\nDB_HOST=mysql\nDB_PORT=3306\nDB_NAME=auftragsuhr\nDB_USER=auftragsuhr_user\nDB_PASSWORD=StrongProdPassword2023!\nJWT_SECRET=sehr_sicherer_jwt_secret_key_mindestens_32_zeichen_lang_production\nEOL\r"
+expect "# "
+
+# Setup nginx
+send "cp nginx/auftragsuhr.conf /etc/nginx/sites-available/auftragsuhr\r"
+expect "# "
+send "ln -sf /etc/nginx/sites-available/auftragsuhr /etc/nginx/sites-enabled/\r"
+expect "# "
+send "rm -f /etc/nginx/sites-enabled/default\r"
+expect "# "
+send "nginx -t && systemctl reload nginx\r"
+expect "# "
+
+# Start containers
+send "docker-compose -f docker-compose.prod.yml up -d\r"
+expect "# "
+
+# Check status
+send "sleep 30\r"
+expect "# "
+send "docker-compose -f docker-compose.prod.yml ps\r"
+expect "# "
+
+send "echo 'Testing health endpoints...'\r"
+expect "# "
+send "curl -s http://localhost:3001/api/health\r"
+expect "# "
+
+send "echo 'Deployment completed!'\r"
+expect "# "
+send "echo 'App should be available at: http://auftragsuhr.vendorserver.de'\r"
+expect "# "
+
+send "exit\r"

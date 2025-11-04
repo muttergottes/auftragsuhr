@@ -1,0 +1,24 @@
+#!/usr/bin/expect -f
+set timeout 120
+set password "dnz7krfu4ira7cfga1q01q5u3iy5p9"
+set host "185.245.96.47"
+set user "root"
+
+spawn ssh -o StrictHostKeyChecking=no $user@$host
+expect "password:"
+send "$password\r"
+expect "# "
+
+send "cd /opt && mkdir -p auftragsuhr && cd auftragsuhr\r"
+expect "# "
+
+send "echo 'Creating basic structure...'\r"
+expect "# "
+
+send "mkdir -p client server database/init scripts nginx logs backups\r"
+expect "# "
+
+send "echo 'Deployment will continue with file creation...'\r"
+expect "# "
+
+send "exit\r"

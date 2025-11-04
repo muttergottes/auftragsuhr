@@ -1,0 +1,49 @@
+#!/usr/bin/expect -f
+set timeout 300
+set password "dnz7krfu4ira7cfga1q01q5u3iy5p9"
+set host "185.245.96.47"
+set user "root"
+
+spawn ssh -o StrictHostKeyChecking=no $user@$host
+expect "password:"
+send "$password\r"
+expect "# "
+
+send "cd /opt/auftragsuhr\r"
+expect "# "
+
+# Check if .env.production exists and is correct
+send "ls -la .env*\r"
+expect "# "
+send "cat .env.production\r"
+expect "# "
+
+# Export environment variables
+send "export DB_PASSWORD='StrongProdPassword2023!'\r"
+expect "# "
+send "export DB_USER='auftragsuhr_user'\r"
+expect "# "
+send "export DB_NAME='auftragsuhr'\r"
+expect "# "
+
+# Clean restart
+send "docker-compose -f docker-compose.prod.yml down\r"
+expect "# "
+send "docker system prune -f\r"
+expect "# "
+
+# Start with verbose output
+send "docker-compose -f docker-compose.prod.yml up -d --build\r"
+expect "# "
+
+send "echo 'Waiting 45 seconds for containers to build and start...'\r"
+expect "# "
+send "sleep 45\r"
+expect "# "
+
+send "docker ps\r"
+expect "# "
+send "docker-compose -f docker-compose.prod.yml ps\r"
+expect "# "
+
+send "exit\r"

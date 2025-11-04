@@ -1,0 +1,23 @@
+#!/usr/bin/expect -f
+set timeout 30
+set password "dnz7krfu4ira7cfga1q01q5u3iy5p9"
+set host "185.245.96.47"
+set user "root"
+
+spawn ssh -o StrictHostKeyChecking=no $user@$host
+expect "password:"
+send "$password\r"
+expect "# "
+
+send "cd /opt/auftragsuhr\r"
+expect "# "
+send "docker-compose -f docker-compose.prod.yml ps\r"
+expect "# "
+send "docker-compose -f docker-compose.prod.yml logs --tail=10\r"
+expect "# "
+send "curl -s http://localhost:3001/api/health || echo 'API not ready'\r"
+expect "# "
+send "curl -s http://localhost:8080 | head -1 || echo 'Frontend not ready'\r"
+expect "# "
+
+send "exit\r"

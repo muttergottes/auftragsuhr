@@ -1,0 +1,47 @@
+#!/usr/bin/expect -f
+set timeout 60
+set password "dnz7krfu4ira7cfga1q01q5u3iy5p9"
+set host "185.245.96.47"
+set user "root"
+
+spawn ssh -o StrictHostKeyChecking=no $user@$host
+expect "password:"
+send "$password\r"
+expect "# "
+
+send "cd /opt\r"
+expect "# "
+send "rm -rf auftragsuhr\r"
+expect "# "
+send "git clone https://github.com/muttergottes/auftragsuhr.git\r"
+expect "# "
+send "cd auftragsuhr\r"
+expect "# "
+
+# Create production environment
+send "cat > .env.production << 'EOL'\nNODE_ENV=production\nDB_HOST=mysql\nDB_PORT=3306\nDB_NAME=auftragsuhr\nDB_USER=auftragsuhr_user\nDB_PASSWORD=StrongProdPassword2023!\nJWT_SECRET=sehr_sicherer_jwt_secret_key_mindestens_32_zeichen_lang_production\nEOL\r"
+expect "# "
+
+send "mkdir -p logs backups\r"
+expect "# "
+
+send "cp nginx/auftragsuhr.conf /etc/nginx/sites-available/auftragsuhr\r"
+expect "# "
+send "ln -sf /etc/nginx/sites-available/auftragsuhr /etc/nginx/sites-enabled/\r"
+expect "# "
+send "rm -f /etc/nginx/sites-enabled/default\r"
+expect "# "
+send "nginx -t && systemctl reload nginx\r"
+expect "# "
+
+send "docker-compose -f docker-compose.prod.yml up -d --build\r"
+expect "# "
+
+send "echo 'Deployment status check...'\r"
+expect "# "
+send "sleep 15\r"
+expect "# "
+send "docker-compose -f docker-compose.prod.yml ps\r"
+expect "# "
+
+send "exit\r"

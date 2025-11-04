@@ -1,0 +1,35 @@
+#!/usr/bin/expect -f
+set timeout 60
+set password "dnz7krfu4ira7cfga1q01q5u3iy5p9"
+set host "185.245.96.47"
+set user "root"
+
+spawn ssh -o StrictHostKeyChecking=no $user@$host
+expect "password:"
+send "$password\r"
+expect "# "
+
+send "cd /opt && rm -rf auftragsuhr\r"
+expect "# "
+
+send "git clone https://github.com/muttergottes/auftragsuhr.git\r"
+expect {
+    "Username for" {
+        send "\r"
+        expect "Password for"
+        send "\r"
+        expect "# "
+    }
+    "# " {}
+}
+
+send "cd auftragsuhr\r"
+expect "# "
+
+send "ls -la\r"
+expect "# "
+
+send "echo 'Repository cloned successfully'\r"
+expect "# "
+
+send "exit\r"

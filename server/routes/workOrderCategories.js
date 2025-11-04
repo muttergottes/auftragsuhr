@@ -13,7 +13,7 @@ router.get('/', authenticateToken, async (req, res) => {
     const db = require('../config/database');
     let query = `
       SELECT id, name, description, color, is_active, created_at, updated_at
-      FROM work_order_categories 
+      FROM categories 
       WHERE 1=1
     `;
     const params = [];
@@ -51,7 +51,7 @@ router.get('/active', authenticateToken, async (req, res) => {
     const db = require('../config/database');
     const categories = await db.query(
       `SELECT id, name, description, color 
-       FROM work_order_categories 
+       FROM categories 
        WHERE is_active = 1 
        ORDER BY name ASC`
     );
@@ -132,7 +132,7 @@ router.post('/',
       // Direct database implementation for reliability
       const db = require('../config/database');
       const result = await db.query(
-        `INSERT INTO work_order_categories (name, description, color, is_active) 
+        `INSERT INTO categories (name, description, color, is_active) 
          VALUES (?, ?, ?, ?)`,
         [name, description, color, is_active ? 1 : 0]
       );
@@ -200,7 +200,7 @@ router.put('/:id',
       // Direct database implementation for reliability
       const db = require('../config/database');
       const result = await db.query(
-        `UPDATE work_order_categories 
+        `UPDATE categories 
          SET name = ?, description = ?, color = ?, is_active = ?,
              updated_at = NOW()
          WHERE id = ?`,
@@ -216,7 +216,7 @@ router.put('/:id',
 
       // Get the updated category
       const updated = await db.query(
-        'SELECT * FROM work_order_categories WHERE id = ?',
+        'SELECT * FROM categories WHERE id = ?',
         [req.params.id]
       );
 
@@ -266,7 +266,7 @@ router.delete('/:id',
       }
       
       const result = await db.query(
-        'DELETE FROM work_order_categories WHERE id = ?',
+        'DELETE FROM categories WHERE id = ?',
         [req.params.id]
       );
       
