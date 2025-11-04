@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  nginx-ssl:
+    image: nginx:alpine
+    container_name: auftragsuhr-nginx-ssl
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-ssl.conf:/etc/nginx/conf.d/default.conf
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - client
+    networks:
+      - auftragsuhr-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: auftragsuhr-mysql-prod
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data_prod:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - auftragsuhr-network
+
+  server:
+    build: ./server
+    container_name: auftragsuhr-server-prod
+    restart: always
+    env_file:
+      - .env.production
+    ports:
+      - "127.0.0.1:3001:3001"
+    depends_on:
+      - mysql
+    networks:
+      - auftragsuhr-network
+
+  client:
+    build: ./client
+    container_name: auftragsuhr-client-prod
+    restart: always
+    ports:
+      - "127.0.0.1:8080:80"
+    depends_on:
+      - server
+    networks:
+      - auftragsuhr-network
+
+volumes:
+  mysql_data_prod:
+    driver: local
+
+networks:
+  auftragsuhr-network:
+    driver: bridge
