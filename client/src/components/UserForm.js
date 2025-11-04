@@ -109,9 +109,6 @@ const UserForm = ({ user, onClose, onSuccess }) => {
     if (!formData.employee_number.trim()) {
       errors.push('Personalnummer ist erforderlich');
     }
-    if (!formData.email.trim()) {
-      errors.push('E-Mail ist erforderlich');
-    }
     if (!formData.first_name.trim()) {
       errors.push('Vorname ist erforderlich');
     }
@@ -182,6 +179,7 @@ const UserForm = ({ user, onClose, onSuccess }) => {
       }
 
       // Remove empty optional fields
+      if (!submitData.email) delete submitData.email;
       if (!submitData.pin) delete submitData.pin;
       if (!submitData.rfid_tag) delete submitData.rfid_tag;
       if (!submitData.qr_code) delete submitData.qr_code;
@@ -237,7 +235,7 @@ const UserForm = ({ user, onClose, onSuccess }) => {
 
             <div>
               <label className="form-label">
-                E-Mail *
+                E-Mail
               </label>
               <input
                 type="email"
@@ -245,7 +243,6 @@ const UserForm = ({ user, onClose, onSuccess }) => {
                 value={formData.email}
                 onChange={handleChange}
                 className="form-input"
-                required
               />
             </div>
 
