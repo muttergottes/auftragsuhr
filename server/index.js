@@ -240,6 +240,10 @@ const startServer = async () => {
     // Connect to database
     await db.connect();
     
+    // Initialize admin user
+    const initAdmin = require('./init-admin');
+    await initAdmin();
+    
     // Start listening
     app.listen(PORT, '0.0.0.0', () => {
       logger.info(`Server started on port ${PORT}`, {
