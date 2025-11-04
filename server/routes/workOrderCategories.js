@@ -12,7 +12,7 @@ router.get('/', authenticateToken, async (req, res) => {
     // Direct database query to avoid model issues
     const db = require('../config/database');
     let query = `
-      SELECT id, name, description, color, is_active, created_at, updated_at
+      SELECT id, name, color, is_active, created_at, updated_at
       FROM categories 
       WHERE 1=1
     `;
@@ -50,7 +50,7 @@ router.get('/active', authenticateToken, async (req, res) => {
     // Direct database query to avoid model issues
     const db = require('../config/database');
     const categories = await db.query(
-      `SELECT id, name, description, color 
+      `SELECT id, name, color 
        FROM categories 
        WHERE is_active = 1 
        ORDER BY name ASC`
@@ -127,14 +127,14 @@ router.post('/',
         });
       }
 
-      const { name, description = '', color = '#007bff', is_active = true } = req.body;
+      const { name, color = '#007bff', is_active = true } = req.body;
       
       // Direct database implementation for reliability
       const db = require('../config/database');
       const result = await db.query(
-        `INSERT INTO categories (name, description, color, is_active) 
-         VALUES (?, ?, ?, ?)`,
-        [name, description, color, is_active ? 1 : 0]
+        `INSERT INTO categories (name, color, is_active) 
+         VALUES (?, ?, ?)`,
+        [name, color, is_active ? 1 : 0]
       );
       
       const categoryId = result.insertId;
@@ -142,7 +142,7 @@ router.post('/',
       res.status(201).json({
         success: true,
         message: 'Auftragskategorie erfolgreich erstellt',
-        data: { id: categoryId, name, description, color, is_active }
+        data: { id: categoryId, name, color, is_active }
       });
     } catch (error) {
       console.error('Error creating work order category:', error);
@@ -195,16 +195,16 @@ router.put('/:id',
         });
       }
 
-      const { name, description, color, is_active } = req.body;
+      const { name, color, is_active } = req.body;
       
       // Direct database implementation for reliability
       const db = require('../config/database');
       const result = await db.query(
         `UPDATE categories 
-         SET name = ?, description = ?, color = ?, is_active = ?,
+         SET name = ?, color = ?, is_active = ?,
              updated_at = NOW()
          WHERE id = ?`,
-        [name, description, color, is_active ? 1 : 0, req.params.id]
+        [name, color, is_active ? 1 : 0, req.params.id]
       );
       
       if (result.affectedRows === 0) {
