@@ -413,8 +413,8 @@ router.get('/summary/daily/:userId/:date', authenticateToken, requireDispatcherO
   }
 });
 
-// GET /api/breaks/active - Get all currently active breaks (admin/dispatcher)
-router.get('/active', authenticateToken, requireDispatcherOrAdmin, async (req, res) => {
+// GET /api/breaks/active - Get all currently active breaks (public access for terminals)
+router.get('/active', async (req, res) => {
   try {
     // Direct query with duration calculation
     const query = `

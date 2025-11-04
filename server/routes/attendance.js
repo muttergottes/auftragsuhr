@@ -315,8 +315,8 @@ router.get('/summary/weekly/:userId', authenticateToken, requireDispatcherOrAdmi
   }
 });
 
-// GET /api/attendance/active - Get all currently active attendances (admin/dispatcher)
-router.get('/active', authenticateToken, requireDispatcherOrAdmin, async (req, res) => {
+// GET /api/attendance/active - Get all currently active attendances (public access for terminals)
+router.get('/active', async (req, res) => {
   try {
     const activeAttendances = await Attendance.getAllActive();
     res.json(activeAttendances.map(a => a.toJSON()));

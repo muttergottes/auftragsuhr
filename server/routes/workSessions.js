@@ -137,8 +137,8 @@ router.get('/history', authenticateToken, requireAnyRole, async (req, res) => {
   }
 });
 
-// GET /api/work-sessions/active - Get active work sessions
-router.get('/active', authenticateToken, requireAnyRole, async (req, res) => {
+// GET /api/work-sessions/active - Get active work sessions (public access for terminals)
+router.get('/active', async (req, res) => {
   try {
     const activeSessions = await WorkSession.getAllActive();
     res.json(activeSessions.map(s => s.toJSON()));
