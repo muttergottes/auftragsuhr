@@ -142,8 +142,8 @@ class User {
     `;
 
     const params = [
-      employee_number, email, hashedPassword, first_name, last_name, role,
-      pin, rfid_tag, qr_code, hourly_rate, 
+      employee_number, email || null, hashedPassword, first_name, last_name, role,
+      pin || null, rfid_tag || null, qr_code || null, hourly_rate || null, 
       work_time_model ? JSON.stringify(work_time_model) : null
     ];
 
